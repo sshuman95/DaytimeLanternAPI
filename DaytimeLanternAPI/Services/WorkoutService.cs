@@ -31,6 +31,8 @@ namespace DaytimeLanternAPI.Services
             {
                 Id = Guid.NewGuid(),
                 Name = request.Name,
+                CreatedDate = DateTime.Now,
+                UpdatedDate = DateTime.Now,
             };
             _context.Workouts.Add(w);
             await _context.SaveChangesAsync();
@@ -38,17 +40,23 @@ namespace DaytimeLanternAPI.Services
             return w;
         }
 
-        public async Task PutWorkout(Guid id, Workout workout)
+        public async Task PutWorkout(Guid id, UpdateWorkoutRequest workout)
         {
-            try
+            if (!WorkoutExists(id))
             {
-                _context.Entry(workout).State = EntityState.Modified;
-                await _context.SaveChangesAsync();
-            }
-            catch (Exception ex)
+                throw new NotFoundException("Workout not found");
+            };
+
+            var existingWorkout = await _context.Workouts.FindAsync(id);
+
+            if (existingWorkout == null)
             {
-                throw new Exception("An error occurred while updating the workout.", ex);
+                throw new NotFoundException("Workout not found");
             }
+
+            existingWorkout.Name = workout.Name;
+            existingWorkout.UpdatedDate = DateTime.Now;
+            await _context.SaveChangesAsync();
         }
 
         public async Task DeleteWorkout(Guid id)
@@ -66,15 +74,9 @@ namespace DaytimeLanternAPI.Services
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occurred while deleting the workout.", ex);
+                throw;
             }
 
-        }
-
-
-        public bool IsInvalidContext()
-        {
-            return _context.Workouts == null;
         }
 
         public bool WorkoutExists(Guid id)

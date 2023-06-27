@@ -10,11 +10,9 @@ namespace DaytimeLanternAPI.Services.Models
 
         public Task<Workout?> GetWorkout(Guid id);
 
-        public Task PutWorkout(Guid id, Workout workout);
+        public Task PutWorkout(Guid id, UpdateWorkoutRequest workoutRequest);
 
         public Task DeleteWorkout(Guid id);
-
-        public bool IsInvalidContext();
 
         public bool WorkoutExists(Guid id);
     }
