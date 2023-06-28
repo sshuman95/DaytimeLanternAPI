@@ -1,5 +1,5 @@
 ﻿using DaytimeLanternAPI.Exceptions;
-using DaytimeLanternAPI.Models.Workout;
+using DaytimeLanternAPI.Models.Workouts;
 using DaytimeLanternAPI.Services.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;

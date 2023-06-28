@@ -1,6 +1,6 @@
 ﻿using DaytimeLanternAPI.Data;
 using DaytimeLanternAPI.Exceptions;
-using DaytimeLanternAPI.Models.Workout;
+using DaytimeLanternAPI.Models.Workouts;
 using DaytimeLanternAPI.Services.Models;
 using Microsoft.EntityFrameworkCore;
 

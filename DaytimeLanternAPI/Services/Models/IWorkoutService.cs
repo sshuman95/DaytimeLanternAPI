@@ -1,4 +1,4 @@
-﻿using DaytimeLanternAPI.Models.Workout;
+﻿using DaytimeLanternAPI.Models.Workouts;
 
 namespace DaytimeLanternAPI.Services.Models
 {

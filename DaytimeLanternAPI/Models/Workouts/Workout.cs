@@ -1,4 +1,6 @@
-﻿namespace DaytimeLanternAPI.Models.Workout
+﻿using DaytimeLanternAPI.Models.Exercises;
+
+namespace DaytimeLanternAPI.Models.Workouts
 {
     public class Workout
     {
@@ -8,6 +10,8 @@
         public DateTime CreatedDate { get; set; }
 
         public DateTime UpdatedDate { get; set; }
+
+        public List<Exercise>? Exercises { get; set; }
 
     }
 }

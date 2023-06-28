@@ -1,4 +1,4 @@
-﻿namespace DaytimeLanternAPI.Models.Workout
+﻿namespace DaytimeLanternAPI.Models.Workouts
 {
     public class CreateWorkoutRequest
     {
