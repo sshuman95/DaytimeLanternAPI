@@ -1,4 +1,4 @@
-﻿using DaytimeLanternAPI.Data;
+﻿using DaytimeLanternAPI.Exceptions;
 using DaytimeLanternAPI.Models.Workout;
 using DaytimeLanternAPI.Services.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -12,7 +12,7 @@ namespace DaytimeLanternAPI.Controllers
     {
         private readonly IWorkoutService _workoutService;
 
-        public WorkoutsController(WorkoutDbContext context, IWorkoutService workoutService)
+        public WorkoutsController(IWorkoutService workoutService)
         {
             _workoutService = workoutService;
         }
@@ -21,10 +21,6 @@ namespace DaytimeLanternAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Workout>>> GetWorkouts()
         {
-            if (_workoutService.IsInvalidContext())
-            {
-                return NotFound();
-            }
             var result = await _workoutService.GetWorkouts();
             return Ok(result);
         }
@@ -33,10 +29,6 @@ namespace DaytimeLanternAPI.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Workout>> GetWorkout(Guid id)
         {
-            if (_workoutService.IsInvalidContext())
-            {
-                return NotFound();
-            }
             var workout = await _workoutService.GetWorkout(id);
 
             if (workout == null)
@@ -50,16 +42,21 @@ namespace DaytimeLanternAPI.Controllers
         // PUT: api/Workouts/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutWorkout(Guid id, Workout workout)
+        public async Task<IActionResult> PutWorkout([FromRoute] Guid id, UpdateWorkoutRequest req)
         {
-            if (id != workout.Id)
+            if (id != req.WorkoutId)
             {
                 return BadRequest();
             }
 
+            if (String.IsNullOrEmpty(req.Name))
+            {
+                return BadRequest("A name is required!");
+            }
+
             try
             {
-                await _workoutService.PutWorkout(id, workout);
+                await _workoutService.PutWorkout(id, req);
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -82,26 +79,39 @@ namespace DaytimeLanternAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<Workout>> PostWorkout(CreateWorkoutRequest request)
         {
+
+            if (request == null)
+            {
+                return BadRequest();
+            }
+
+            if (String.IsNullOrEmpty(request.Name))
+            {
+                return BadRequest("A name is required!");
+            }
+
             var response = await _workoutService.PostWorkout(request);
 
             if (response == null)
             {
-                return Problem("Failed to create workout");
+                return BadRequest("Failed to create workout");
             }
 
-            return CreatedAtAction("GetWorkout", new { id = response.Id }, response);
+            return CreatedAtAction(nameof(GetWorkout), new { id = response.Id }, response);
         }
 
         // DELETE: api/Workouts/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteWorkout(Guid id)
         {
-            if (_workoutService.IsInvalidContext())
+            try
+            {
+                await _workoutService.DeleteWorkout(id);
+            }
+            catch (NotFoundException)
             {
                 return NotFound();
             }
-            await _workoutService.DeleteWorkout(id);
-
             return NoContent();
         }
     }
